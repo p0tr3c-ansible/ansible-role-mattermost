@@ -1,0 +1,17 @@
+mattermost_download_url: https://releases.mattermost.com/5.1.0/mattermost-5.1.0-linux-amd64.tar.gz
+mattermost_zip_file: mattermost-5.1.0-linux-amd64.tar.gz
+# Enables the systemd service
+mattermost_auto_start: true
+# User used by the systemd service
+mattermost_user: mattermost
+
+mattermost_db_user: mmuser
+mattermost_db_password: please-change-this-password
+mattermost_db_server: 127.0.0.1
+
+mattermost_enable_tls: false
+# Source location of the certificate file
+mattermost_certificate_file: ""
+# Source location of the private key
+mattermost_private_key_file: ""
+mattermost_tls_port: "443"

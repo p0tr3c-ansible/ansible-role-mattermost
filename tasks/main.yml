@@ -1,0 +1,71 @@
+---
+- name: Create temp directory
+  file:
+    path: "{{ ansible_env.HOME }}/tmp"
+    state: directory
+    mode: 0700
+
+- name: Download binary from MatterMost website
+  get_url:
+    url: "{{ mattermost_download_url }}"
+    dest: "{{ ansible_env.HOME }}/tmp/"
+
+- name: unpack mattermost archive
+  unarchive:
+    src: "{{ ansible_env.HOME }}/tmp/{{ mattermost_zip_file }}"
+    dest: /opt/
+    copy: no
+  args:
+    creates: /opt/mattermost
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"DriverName": "mysql",'
+    line: '"DriverName": "postgres",'
+    backrefs: yes
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"DataSource":'
+    line: '        "DataSource": "postgres://{{ mattermost_db_user }}:{{ mattermost_db_password }}@{{ mattermost_db_server }}:5432/mattermost?sslmode=disable&connect_timeout=10",'
+    backrefs: yes
+
+- name: Create mattermost user
+  user:
+    name: "{{ mattermost_user }}"
+    system: yes
+    createhome: no
+
+- name: Change mattermost directory permissions
+  file:
+    path: /opt/mattermost
+    state: directory
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
+    recurse: yes
+
+- name: Include TLS configuration
+  include_tasks: tls_configuration.yml
+  when: mattermost_enable_tls == True
+
+- name: Create mattermost systemd service
+  template:
+    src: mattermost.service.j2
+    dest: /etc/systemd/system/mattermost.service
+    owner: root
+    group: root
+    mode: 0664
+
+- name: Clear tmp files
+  file:
+    path: "{{ ansible_env.HOME }}/tmp/{{ mattermost_zip_file }}"
+    state: absent
+
+- name: Enable Mattermost service
+  service:
+    name: mattermost
+    enabled: yes
+    state: started
+  when: mattermost_auto_start == True

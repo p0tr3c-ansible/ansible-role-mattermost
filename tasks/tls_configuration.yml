@@ -1,0 +1,56 @@
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"ConnectionSecurity":'
+    line: '"ConnectionSecurity": "TLS",'
+    backrefs: yes
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"TLSCertFile":'
+    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem",'
+    backrefs: yes
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"TLSKeyFile":'
+    line: '"TLSKeyFile": "/etc/pki/tls/private/{{ ansible_fqdn }}.pem",'
+    backrefs: yes
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"ListenAddress": ":8065",'
+    line: '"ListenAddress": ":{{ mattermost_tls_port }}",'
+    backrefs: yes
+
+- name: Edit /opt/mattermost/config/config.json
+  lineinfile:
+    dest: /opt/mattermost/config/config.json
+    regexp: '"Forward80To443": false,'
+    line: '"Forward80To443": true,'
+    backrefs: yes
+
+- name: Upload certificate
+  copy:
+    src: "{{ mattermost_certificate_file }}"
+    dest: /etc/pki/tls/certs/mattermost.catlab.local.pem
+    mode: 0740
+    owner: mattermost
+    group: mattermost
+
+- name: Upload private key
+  copy:
+    src: "{{ mattermost_private_key_file }}"
+    dest: /etc/pki/tls/private/mattermost.catlab.local.pem
+    mode: 0700
+    owner: mattermost
+    group: mattermost
+
+- name: Set net bind capability
+  capabilities:
+    path: /opt/mattermost/bin/mattermost
+    capability: cap_net_bind_service+ep
+    state: present
