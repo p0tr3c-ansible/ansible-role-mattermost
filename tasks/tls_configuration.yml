@@ -1,36 +1,36 @@
 - name: Edit /opt/mattermost/config/config.json
-  lineinfile:
-    dest: /opt/mattermost/config/config.json
-    regexp: '"ConnectionSecurity":'
-    line: '"ConnectionSecurity": "TLS",'
-    backrefs: yes
+  replace:
+    path: /opt/mattermost/config/config.json
+    regexp: '.*"ConnectionSecurity": "",$'
+    replace: '\t"ConnectionSecurity": "TLS",'
+    before: '.*"TLSCertFile".*'
 
 - name: Edit /opt/mattermost/config/config.json
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"TLSCertFile":'
-    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem",'
+    line: '\t"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem",'
     backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"TLSKeyFile":'
-    line: '"TLSKeyFile": "/etc/pki/tls/private/{{ ansible_fqdn }}.pem",'
+    line: '\t"TLSKeyFile": "/etc/pki/tls/private/{{ ansible_fqdn }}.pem",'
     backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"ListenAddress": ":8065",'
-    line: '"ListenAddress": ":{{ mattermost_tls_port }}",'
+    line: '\t"ListenAddress": ":{{ mattermost_tls_port }}",'
     backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"Forward80To443": false,'
-    line: '"Forward80To443": true,'
+    line: '\t"Forward80To443": true,'
     backrefs: yes
 
 - name: Upload certificate
