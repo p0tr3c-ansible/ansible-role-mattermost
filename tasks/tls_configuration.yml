@@ -9,7 +9,7 @@
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"TLSCertFile":'
-    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }.pem",'
+    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem",'
     backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json
