@@ -9,7 +9,7 @@
   lineinfile:
     dest: /opt/mattermost/config/config.json
     regexp: '"TLSCertFile":'
-    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem",'
+    line: '"TLSCertFile": "/etc/pki/tls/certs/{{ ansible_fqdn }.pem",'
     backrefs: yes
 
 - name: Edit /opt/mattermost/config/config.json
@@ -36,7 +36,7 @@
 - name: Upload certificate
   copy:
     src: "{{ mattermost_certificate_file }}"
-    dest: /etc/pki/tls/certs/mattermost.catlab.local.pem
+    dest: /etc/pki/tls/certs/{{ ansible_fqdn }}.pem
     mode: 0740
     owner: mattermost
     group: mattermost
@@ -44,7 +44,7 @@
 - name: Upload private key
   copy:
     src: "{{ mattermost_private_key_file }}"
-    dest: /etc/pki/tls/private/mattermost.catlab.local.pem
+    dest: /etc/pki/tls/private/{{ ansible_fqdn }}.pem
     mode: 0700
     owner: mattermost
     group: mattermost
