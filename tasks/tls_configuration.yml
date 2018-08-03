@@ -38,16 +38,16 @@
     src: "{{ mattermost_certificate_file }}"
     dest: "/etc/pki/tls/certs/{{ ansible_fqdn }}.pem"
     mode: 0740
-    owner: mattermost
-    group: mattermost
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
 
 - name: Upload private key
   copy:
     src: "{{ mattermost_private_key_file }}"
     dest: "/etc/pki/tls/private/{{ ansible_fqdn }}.pem"
     mode: 0700
-    owner: mattermost
-    group: mattermost
+    owner: "{{ mattermost_user }}"
+    group: "{{ mattermost_user }}"
 
 - name: Set net bind capability
   capabilities:
